@@ -5,7 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/elastic/go-elasticsearch/esapi"
+	"github.com/elastic/go-elasticsearch/v7"
+	"github.com/elastic/go-elasticsearch/v7/esapi"
 )
 
 type ESQuery struct {
@@ -22,7 +23,11 @@ func encode(q json.Marshaler, b *bytes.Buffer) (err error) {
 	return nil
 }
 
-func search(q json.Marshaler, api *esapi.API, o ...func(*esapi.SearchRequest)) (res *esapi.Response, err error) {
+func Search(
+	api *elasticsearch.Client,
+	q json.Marshaler,
+	o ...func(*esapi.SearchRequest),
+) (res *esapi.Response, err error) {
 	var b bytes.Buffer
 	err = encode(ESQuery{q}, &b)
 	if err != nil {

@@ -5,8 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
-
-	"github.com/elastic/go-elasticsearch/esapi"
 )
 
 /*******************************************************************************
@@ -51,10 +49,6 @@ func (a MatchQuery) MarshalJSON() ([]byte, error) {
 	})
 }
 
-func (a *MatchQuery) Run(api *esapi.API, o ...func(*esapi.SearchRequest)) (res *esapi.Response, err error) {
-	return search(*a, api, o...)
-}
-
 type matchParams struct {
 	Qry          interface{}   `json:"query"`
 	Anl          string        `json:"analyzer,omitempty"`
@@ -89,7 +83,7 @@ func MatchPhrasePrefix(fieldName string, simpleQuery ...interface{}) *MatchQuery
 
 func newMatch(mType matchType, fieldName string, simpleQuery ...interface{}) *MatchQuery {
 	var qry interface{}
-	if simpleQuery != nil && len(simpleQuery) > 0 {
+	if len(simpleQuery) > 0 {
 		qry = simpleQuery[len(simpleQuery)-1]
 	}
 

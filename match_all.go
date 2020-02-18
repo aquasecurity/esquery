@@ -2,8 +2,6 @@ package esquery
 
 import (
 	"encoding/json"
-
-	"github.com/elastic/go-elasticsearch/esapi"
 )
 
 // https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-match-all-query.html
@@ -26,10 +24,6 @@ func (a MatchAllQuery) MarshalJSON() ([]byte, error) {
 	}
 
 	return json.Marshal(map[string]matchAllParams{mType: a.params})
-}
-
-func (a *MatchAllQuery) Run(api *esapi.API, o ...func(*esapi.SearchRequest)) (res *esapi.Response, err error) {
-	return search(*a, api, o...)
 }
 
 func MatchAll() *MatchAllQuery {

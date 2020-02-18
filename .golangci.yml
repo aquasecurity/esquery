@@ -1,3 +1,5 @@
+run:
+    tests: false
 linters:
     disable-all: true
     enable:
