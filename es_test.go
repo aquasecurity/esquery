@@ -1,27 +1,40 @@
 package esquery
 
 import (
-	"bytes"
 	"encoding/json"
+	"reflect"
 	"testing"
 )
 
-type queryTest struct {
-	name    string
-	q       json.Marshaler
-	expJSON string
+type mapTest struct {
+	name string
+	q    Mappable
+	exp  map[string]interface{}
 }
 
-func runTests(t *testing.T, tests []queryTest) {
+func runMapTests(t *testing.T, tests []mapTest) {
 	for _, test := range tests {
-		var b bytes.Buffer
 		t.Run(test.name, func(t *testing.T) {
-			err := encode(test.q, &b)
-			if err != nil {
-				t.Errorf("unexpectedly failed: %s", err)
-			} else if b.String() != test.expJSON {
-				t.Errorf("expected %q, got %q", test.expJSON, b.String())
+			m := test.q.Map()
+
+			// convert both maps to JSON in order to compare them. we do not
+			// use reflect.DeepEqual on the maps as this doesn't always work
+			exp, got, ok := sameJSON(test.exp, m)
+			if !ok {
+				t.Errorf("expected %s, got %s", exp, got)
 			}
 		})
 	}
+}
+
+func sameJSON(a, b map[string]interface{}) (aJSON, bJSON []byte, ok bool) {
+	aJSON, aErr := json.Marshal(a)
+	bJSON, bErr := json.Marshal(b)
+
+	if aErr != nil || bErr != nil {
+		return aJSON, bJSON, false
+	}
+
+	ok = reflect.DeepEqual(aJSON, bJSON)
+	return aJSON, bJSON, ok
 }

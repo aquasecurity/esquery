@@ -2,9 +2,9 @@ package esquery
 
 import (
 	"bytes"
-	"encoding/json"
-	"errors"
 	"io"
+
+	"github.com/fatih/structs"
 )
 
 /*******************************************************************************
@@ -29,7 +29,7 @@ type MatchQuery struct {
 	params matchParams
 }
 
-func (a MatchQuery) MarshalJSON() ([]byte, error) {
+func (a *MatchQuery) Map() map[string]interface{} {
 	var mType string
 	switch a.mType {
 	case TypeMatch:
@@ -42,27 +42,27 @@ func (a MatchQuery) MarshalJSON() ([]byte, error) {
 		mType = "match_phrase_prefix"
 	}
 
-	return json.Marshal(map[string]interface{}{
+	return map[string]interface{}{
 		mType: map[string]interface{}{
-			a.field: a.params,
+			a.field: structs.Map(a.params),
 		},
-	})
+	}
 }
 
 type matchParams struct {
-	Qry          interface{}   `json:"query"`
-	Anl          string        `json:"analyzer,omitempty"`
-	AutoGenerate *bool         `json:"auto_generate_synonyms_phrase_query,omitempty"`
-	Fuzz         string        `json:"fuzziness,omitempty"`
-	MaxExp       uint16        `json:"max_expansions,omitempty"`
-	PrefLen      uint16        `json:"prefix_length,omitempty"`
-	Trans        *bool         `json:"transpositions,omitempty"`
-	FuzzyRw      string        `json:"fuzzy_rewrite,omitempty"`
-	Lent         bool          `json:"lenient,omitempty"`
-	Op           MatchOperator `json:"operator,omitempty"`
-	MinMatch     string        `json:"minimum_should_match,omitempty"`
-	ZeroTerms    string        `json:"zero_terms_query,omitempty"`
-	Slp          uint16        `json:"slop,omitempty"` // only relevant for match_phrase query
+	Qry          interface{}   `structs:"query"`
+	Anl          string        `structs:"analyzer,omitempty"`
+	AutoGenerate *bool         `structs:"auto_generate_synonyms_phrase_query,omitempty"`
+	Fuzz         string        `structs:"fuzziness,omitempty"`
+	MaxExp       uint16        `structs:"max_expansions,omitempty"`
+	PrefLen      uint16        `structs:"prefix_length,omitempty"`
+	Trans        *bool         `structs:"transpositions,omitempty"`
+	FuzzyRw      string        `structs:"fuzzy_rewrite,omitempty"`
+	Lent         bool          `structs:"lenient,omitempty"`
+	Op           MatchOperator `structs:"operator,string,omitempty"`
+	MinMatch     string        `structs:"minimum_should_match,omitempty"`
+	ZeroTerms    ZeroTerms     `structs:"zero_terms_query,string,omitempty"`
+	Slp          uint16        `structs:"slop,omitempty"` // only relevant for match_phrase query
 }
 
 func Match(fieldName string, simpleQuery ...interface{}) *MatchQuery {
@@ -156,7 +156,7 @@ func (q *MatchQuery) Slop(n uint16) *MatchQuery {
 	return q
 }
 
-func (q *MatchQuery) ZeroTermsQuery(s string) *MatchQuery {
+func (q *MatchQuery) ZeroTermsQuery(s ZeroTerms) *MatchQuery {
 	q.params.ZeroTerms = s
 	return q
 }
@@ -173,20 +173,15 @@ const (
 	AND
 )
 
-var ErrInvalidValue = errors.New("invalid constant value")
-
-func (a MatchOperator) MarshalJSON() ([]byte, error) {
-	var s string
+func (a MatchOperator) String() string {
 	switch a {
 	case OR:
-		s = "or"
+		return "or"
 	case AND:
-		s = "and"
+		return "and"
 	default:
-		return nil, ErrInvalidValue
+		return ""
 	}
-
-	return json.Marshal(s)
 }
 
 type ZeroTerms uint8
@@ -196,60 +191,13 @@ const (
 	All
 )
 
-func (a ZeroTerms) MarshalJSON() ([]byte, error) {
-	var s string
+func (a ZeroTerms) String() string {
 	switch a {
 	case None:
-		s = "none"
+		return "none"
 	case All:
-		s = "all"
+		return "all"
 	default:
-		return nil, ErrInvalidValue
+		return ""
 	}
-
-	return json.Marshal(s)
 }
-
-/*******************************************************************************
- * Multi-Match Queries
- * https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-multi-match-query.html
- * NOTE: uncommented for now, article is too long
- ******************************************************************************/
-
-//type MultiMatchQuery struct {
-//fields []string
-//mType  multiMatchType
-//params multiMatchQueryParams
-//}
-
-//type multiMatchType uint8
-
-//const (
-//BestFields multiMatchType = iota
-//MostFields
-//CrossFields
-//Phrase
-//PhrasePrefix
-//BoolPrefix
-//)
-
-//func (a multiMatchType) MarshalJSON() ([]byte, error) {
-//var s string
-//switch a {
-//case BestFields:
-//s = "best_fields"
-//case MostFields:
-//s = "most_fields"
-//case CrossFields:
-//s = "cross_fields"
-//case Phrase:
-//s = "phrase"
-//case PhrasePrefix:
-//s = "phrase_prefix"
-//case BoolPrefix:
-//s = "bool_prefix"
-//default:
-//return nil, ErrInvalidValue
-//}
-//return json.Marshal(s)
-//}

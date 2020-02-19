@@ -1,7 +1,7 @@
 package esquery
 
 import (
-	"encoding/json"
+	"github.com/fatih/structs"
 )
 
 /*******************************************************************************
@@ -9,19 +9,18 @@ import (
  * https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-exists-query.html
  ******************************************************************************/
 
-type ExistsQuery string
-
-func Exists(field string) *ExistsQuery {
-	q := ExistsQuery(field)
-	return &q
+type ExistsQuery struct {
+	Field string `structs:"field"`
 }
 
-func (q ExistsQuery) MarshalJSON() ([]byte, error) {
-	return json.Marshal(map[string]interface{}{
-		"exists": map[string]string{
-			"field": string(q),
-		},
-	})
+func Exists(field string) *ExistsQuery {
+	return &ExistsQuery{field}
+}
+
+func (q *ExistsQuery) Map() map[string]interface{} {
+	return map[string]interface{}{
+		"exists": structs.Map(q),
+	}
 }
 
 /*******************************************************************************
@@ -29,19 +28,20 @@ func (q ExistsQuery) MarshalJSON() ([]byte, error) {
  * https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-ids-query.html
  ******************************************************************************/
 
-type IDsQuery []string
-
-func IDs(vals ...string) *IDsQuery {
-	q := IDsQuery(vals)
-	return &q
+type IDsQuery struct {
+	IDs struct {
+		Values []string `structs:"values"`
+	} `structs:"ids"`
 }
 
-func (q IDsQuery) MarshalJSON() ([]byte, error) {
-	return json.Marshal(map[string]interface{}{
-		"ids": map[string][]string{
-			"values": []string(q),
-		},
-	})
+func IDs(vals ...string) *IDsQuery {
+	q := &IDsQuery{}
+	q.IDs.Values = vals
+	return q
+}
+
+func (q *IDsQuery) Map() map[string]interface{} {
+	return structs.Map(q)
 }
 
 /*******************************************************************************
@@ -55,8 +55,8 @@ type PrefixQuery struct {
 }
 
 type prefixQueryParams struct {
-	Value   string `json:"value"`
-	Rewrite string `json:"rewrite,omitempty"`
+	Value   string `structs:"value"`
+	Rewrite string `structs:"rewrite,omitempty"`
 }
 
 func Prefix(field, value string) *PrefixQuery {
@@ -71,12 +71,12 @@ func (q *PrefixQuery) Rewrite(s string) *PrefixQuery {
 	return q
 }
 
-func (q PrefixQuery) MarshalJSON() ([]byte, error) {
-	return json.Marshal(map[string]interface{}{
-		"prefix": map[string]prefixQueryParams{
-			q.field: q.params,
+func (q *PrefixQuery) Map() map[string]interface{} {
+	return map[string]interface{}{
+		"prefix": map[string]interface{}{
+			q.field: structs.Map(q.params),
 		},
-	})
+	}
 }
 
 /*******************************************************************************
@@ -90,14 +90,14 @@ type RangeQuery struct {
 }
 
 type rangeQueryParams struct {
-	Gt       interface{}   `json:"gt,omitempty"`
-	Gte      interface{}   `json:"gte,omitempty"`
-	Lt       interface{}   `json:"lt,omitempty"`
-	Lte      interface{}   `json:"lte,omitempty"`
-	Format   string        `json:"format,omitempty"`
-	Relation RangeRelation `json:"relation,omitempty"`
-	TimeZone string        `json:"time_zone,omitempty"`
-	Boost    float32       `json:"boost,omitempty"`
+	Gt       interface{}   `structs:"gt,omitempty"`
+	Gte      interface{}   `structs:"gte,omitempty"`
+	Lt       interface{}   `structs:"lt,omitempty"`
+	Lte      interface{}   `structs:"lte,omitempty"`
+	Format   string        `structs:"format,omitempty"`
+	Relation RangeRelation `structs:"relation,string,omitempty"`
+	TimeZone string        `structs:"time_zone,omitempty"`
+	Boost    float32       `structs:"boost,omitempty"`
 }
 
 func Range(field string) *RangeQuery {
@@ -144,12 +144,12 @@ func (a *RangeQuery) Boost(b float32) *RangeQuery {
 	return a
 }
 
-func (a RangeQuery) MarshalJSON() ([]byte, error) {
-	return json.Marshal(map[string]interface{}{
-		"range": map[string]rangeQueryParams{
-			a.field: a.params,
+func (a *RangeQuery) Map() map[string]interface{} {
+	return map[string]interface{}{
+		"range": map[string]interface{}{
+			a.field: structs.Map(a.params),
 		},
-	})
+	}
 }
 
 type RangeRelation uint8
@@ -160,20 +160,17 @@ const (
 	WITHIN
 )
 
-func (a RangeRelation) MarshalJSON() ([]byte, error) {
-	var s string
+func (a RangeRelation) String() string {
 	switch a {
 	case INTERSECTS:
-		s = "INTERSECTS"
+		return "INTERSECTS"
 	case CONTAINS:
-		s = "CONTAINS"
+		return "CONTAINS"
 	case WITHIN:
-		s = "WITHIN"
+		return "WITHIN"
 	default:
-		return nil, ErrInvalidValue
+		return ""
 	}
-
-	return json.Marshal(s)
 }
 
 /*******************************************************************************
@@ -188,10 +185,10 @@ type RegexpQuery struct {
 }
 
 type regexpQueryParams struct {
-	Value                 string `json:"value"`
-	Flags                 string `json:"flags,omitempty"`
-	MaxDeterminizedStates uint16 `json:"max_determinized_states,omitempty"`
-	Rewrite               string `json:"rewrite,omitempty"`
+	Value                 string `structs:"value"`
+	Flags                 string `structs:"flags,omitempty"`
+	MaxDeterminizedStates uint16 `structs:"max_determinized_states,omitempty"`
+	Rewrite               string `structs:"rewrite,omitempty"`
 }
 
 func Regexp(field, value string) *RegexpQuery {
@@ -227,18 +224,18 @@ func (q *RegexpQuery) Rewrite(r string) *RegexpQuery {
 	return q
 }
 
-func (q RegexpQuery) MarshalJSON() ([]byte, error) {
+func (q *RegexpQuery) Map() map[string]interface{} {
 	var qType string
 	if q.wildcard {
 		qType = "wildcard"
 	} else {
 		qType = "regexp"
 	}
-	return json.Marshal(map[string]interface{}{
-		qType: map[string]regexpQueryParams{
-			q.field: q.params,
+	return map[string]interface{}{
+		qType: map[string]interface{}{
+			q.field: structs.Map(q.params),
 		},
-	})
+	}
 }
 
 /*******************************************************************************
@@ -267,12 +264,12 @@ type FuzzyQuery struct {
 }
 
 type fuzzyQueryParams struct {
-	Value          string `json:"value"`
-	Fuzziness      string `json:"fuzziness,omitempty"`
-	MaxExpansions  uint16 `json:"max_expansions,omitempty"`
-	PrefixLength   uint16 `json:"prefix_length,omitempty"`
-	Transpositions *bool  `json:"transpositions,omitempty"`
-	Rewrite        string `json:"rewrite,omitempty"`
+	Value          string `structs:"value"`
+	Fuzziness      string `structs:"fuzziness,omitempty"`
+	MaxExpansions  uint16 `structs:"max_expansions,omitempty"`
+	PrefixLength   uint16 `structs:"prefix_length,omitempty"`
+	Transpositions *bool  `structs:"transpositions,omitempty"`
+	Rewrite        string `structs:"rewrite,omitempty"`
 }
 
 func Fuzzy(field, value string) *FuzzyQuery {
@@ -314,12 +311,12 @@ func (q *FuzzyQuery) Rewrite(s string) *FuzzyQuery {
 	return q
 }
 
-func (q FuzzyQuery) MarshalJSON() ([]byte, error) {
-	return json.Marshal(map[string]interface{}{
-		"fuzzy": map[string]fuzzyQueryParams{
-			q.field: q.params,
+func (q *FuzzyQuery) Map() map[string]interface{} {
+	return map[string]interface{}{
+		"fuzzy": map[string]interface{}{
+			q.field: structs.Map(q.params),
 		},
-	})
+	}
 }
 
 /*******************************************************************************
@@ -333,8 +330,8 @@ type TermQuery struct {
 }
 
 type termQueryParams struct {
-	Value interface{} `json:"value"`
-	Boost float32     `json:"boost,omitempty"`
+	Value interface{} `structs:"value"`
+	Boost float32     `structs:"boost,omitempty"`
 }
 
 func Term(field string, value interface{}) *TermQuery {
@@ -356,12 +353,12 @@ func (q *TermQuery) Boost(b float32) *TermQuery {
 	return q
 }
 
-func (q TermQuery) MarshalJSON() ([]byte, error) {
-	return json.Marshal(map[string]interface{}{
-		"term": map[string]termQueryParams{
-			q.field: q.params,
+func (q *TermQuery) Map() map[string]interface{} {
+	return map[string]interface{}{
+		"term": map[string]interface{}{
+			q.field: structs.Map(q.params),
 		},
-	})
+	}
 }
 
 /*******************************************************************************
@@ -392,12 +389,13 @@ func (q *TermsQuery) Boost(b float32) *TermsQuery {
 	return q
 }
 
-func (q TermsQuery) MarshalJSON() ([]byte, error) {
+func (q TermsQuery) Map() map[string]interface{} {
 	innerMap := map[string]interface{}{q.field: q.values}
 	if q.boost > 0 {
 		innerMap["boost"] = q.boost
 	}
-	return json.Marshal(map[string]interface{}{"terms": innerMap})
+
+	return map[string]interface{}{"terms": innerMap}
 }
 
 /*******************************************************************************
@@ -411,9 +409,9 @@ type TermsSetQuery struct {
 }
 
 type termsSetQueryParams struct {
-	Terms                    []string `json:"terms"`
-	MinimumShouldMatchField  string   `json:"minimum_should_match_field,omitempty"`
-	MinimumShouldMatchScript string   `json:"minimum_should_match_script,omitempty"`
+	Terms                    []string `structs:"terms"`
+	MinimumShouldMatchField  string   `structs:"minimum_should_match_field,omitempty"`
+	MinimumShouldMatchScript string   `structs:"minimum_should_match_script,omitempty"`
 }
 
 func TermsSet(field string, terms ...string) *TermsSetQuery {
@@ -440,10 +438,10 @@ func (q *TermsSetQuery) MinimumShouldMatchScript(script string) *TermsSetQuery {
 	return q
 }
 
-func (q TermsSetQuery) MarshalJSON() ([]byte, error) {
-	return json.Marshal(map[string]interface{}{
-		"terms_set": map[string]termsSetQueryParams{
-			q.field: q.params,
+func (q TermsSetQuery) Map() map[string]interface{} {
+	return map[string]interface{}{
+		"terms_set": map[string]interface{}{
+			q.field: structs.Map(q.params),
 		},
-	})
+	}
 }
