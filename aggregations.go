@@ -40,6 +40,10 @@ func (req *AggregationRequest) Map() map[string]interface{} {
 	}
 }
 
+func (req *AggregationRequest) MarshalJSON() ([]byte, error) {
+	return json.Marshal(req.Map())
+}
+
 func (req *AggregationRequest) Run(
 	api *elasticsearch.Client,
 	o ...func(*esapi.SearchRequest),
