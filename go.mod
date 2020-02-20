@@ -1,4 +1,4 @@
-module bitbucket.org/scalock/esquery
+module github.com/aquasecurity/esquery
 
 go 1.13
 

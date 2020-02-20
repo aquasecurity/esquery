@@ -1,8 +1,41 @@
 # esquery
 
-**esquery** is a non-obtrusive, idiomatic and easy-to-use query and aggregation builder for the [official Go client](https://github.com/elastic/go-elasticsearch) for [ElasticSearch](https://www.elastic.co/products/elasticsearch). It alleviates the need to use extremely nested maps (`map[string]interface{}`) and serializing queries to JSON manually. It also helps eliminating common mistakes such as misspelling query types, as everything is statically typed.
+[![](https://img.shields.io/static/v1?label=godoc&message=reference&color=blue&style=flat-square)](https://godoc.org/github.com/aquasecurity/esquery) [![](https://img.shields.io/github/license/aquasecurity/esquery?style=flat-square)](LICENSE)
 
-Save yourself some joint aches and many lines of code by switching for maps to `esquery`. Wanna know how much code you'll save? just read this project's test.
+**A non-obtrusive, idiomatic and easy-to-use query and aggregation builder for the [official Go client](https://github.com/elastic/go-elasticsearch) for [ElasticSearch](https://www.elastic.co/products/elasticsearch).**
+
+## Table of Contents
+
+<!--ts-->
+   * [Description](#description)
+   * [Status](#status)
+   * [Installation](#installation)
+   * [Usage](#usage)
+   * [Notes](#notes)
+   * [Features](#features)
+      * [Supported Queries](#supported-queries)
+      * [Supported Aggregations](#supported-aggregations)
+      * [Custom Queries and Aggregations](#custom-queries-and-aggregations)
+   * [License](#license)
+<!--te-->
+
+## Description
+
+`esquery` alleviates the need to use extremely nested maps (`map[string]interface{}`) and serializing queries to JSON manually. It also helps eliminating common mistakes such as misspelling query types, as everything is statically typed.
+
+Using `esquery` can make your code much easier to write, read and maintain, and significantly reduce the amount of code you write. Wanna know how much code you'll save? just check this project's tests.
+
+## Status
+
+This is an early release, API may still change.
+
+## Installation
+
+`esquery` is a Go module. To install, simply run this in your project's root directory:
+
+```bash
+go get github.com/aquasecurity/esquery
+```
 
 ## Usage
 
@@ -17,7 +50,7 @@ import (
 	"context"
 	"log"
 
-	"bitbucket.org/scalock/esquery"
+	"github.com/aquasecurity/esquery"
 	"github.com/elastic/go-elasticsearch/v7"
 )
 
@@ -84,7 +117,9 @@ func main() {
   either receive one query object, or an array of query objects. `esquery` will
   generate an array even if there's only one query object.
 
-## Supported Queries
+## Features
+
+### Supported Queries
 
 The following queries are currently supported:
 
@@ -111,11 +146,7 @@ The following queries are currently supported:
 | `"constant_score"`      | `ConstantScore()`     |
 | `"dis_max"`             | `DisMax()`            |
 
-### Custom Queries
-
-To execute an arbitrary query, or any query that is not natively supported by the library yet, use the `CustomQuery()` function, which accepts any `map[string]interface{}` value.
-
-## Supported Aggregations
+### Supported Aggregations
 
 The following aggregations are currently supported:
 
@@ -132,6 +163,10 @@ The following aggregations are currently supported:
 | `"stats"`               | `Stats()`             |
 | `"string_stats"`        | `StringStats()`       |
 
-### Custom Aggregations
+#### Custom Queries and Aggregations
 
-To execute an arbitrary aggregation, or any aggregation that is not natively supported by the library yet, use the `CustomAgg()` function, which accepts any `map[string]interface{}` value.
+To execute an arbitrary query or aggregation (including those not yet supported by the library), use the `CustomQuery()` or `CustomAgg()` functions, respectively. Both accept any `map[string]interface{}` value.
+
+## License
+
+This library is distributed under the terms of the [Apache License 2.0](LICENSE).
