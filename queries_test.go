@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestQueries(t *testing.T) {
+func TestQueryMaps(t *testing.T) {
 	runMapTests(t, []mapTest{
 		{
 			"a simple match_all query",
@@ -63,6 +63,20 @@ func TestQueries(t *testing.T) {
 					},
 				},
 			},
+		},
+	})
+}
+
+func TestQueryJSONs(t *testing.T) {
+	runJSONTests(t, []jsonTest{
+		{
+			"simple query",
+			Query(
+				Bool().
+					Must(Term("account_id", "bla")),
+			),
+			`{"query":{"bool":{"must":[{"term":{"account_id":{"value":"bla"}}}]}}}`,
+			nil,
 		},
 	})
 }

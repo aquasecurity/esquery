@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"reflect"
 	"testing"
+
+	"github.com/jgroeneveld/trial/assert"
 )
 
 type mapTest struct {
@@ -37,4 +39,21 @@ func sameJSON(a, b map[string]interface{}) (aJSON, bJSON []byte, ok bool) {
 
 	ok = reflect.DeepEqual(aJSON, bJSON)
 	return aJSON, bJSON, ok
+}
+
+type jsonTest struct {
+	name    string
+	q       json.Marshaler
+	expJSON string
+	expErr  error
+}
+
+func runJSONTests(t *testing.T, tests []jsonTest) {
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			b, err := test.q.MarshalJSON()
+			assert.Equal(t, test.expErr, err)
+			assert.Equal(t, test.expJSON, string(b))
+		})
+	}
 }

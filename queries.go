@@ -22,12 +22,16 @@ func (req *QueryRequest) Map() map[string]interface{} {
 	}
 }
 
+func (req *QueryRequest) MarshalJSON() ([]byte, error) {
+	return json.Marshal(req.Map())
+}
+
 func (req *QueryRequest) Run(
 	api *elasticsearch.Client,
 	o ...func(*esapi.SearchRequest),
 ) (res *esapi.Response, err error) {
 	var b bytes.Buffer
-	err = json.NewEncoder(&b).Encode(req.Query.Map())
+	err = json.NewEncoder(&b).Encode(req.Map())
 	if err != nil {
 		return nil, err
 	}
