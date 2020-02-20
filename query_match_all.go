@@ -2,11 +2,9 @@ package esquery
 
 import "github.com/fatih/structs"
 
-/*******************************************************************************
- * Match All Queries
- * https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-match-all-query.html
- ******************************************************************************/
-
+// MatchAllQuery represents a query of type "match_all" or "match_none", as
+// described in
+// https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-match-all-query.html
 type MatchAllQuery struct {
 	all    bool
 	params matchAllParams
@@ -16,9 +14,11 @@ type matchAllParams struct {
 	Boost float32 `structs:"boost,omitempty"`
 }
 
-func (a *MatchAllQuery) Map() map[string]interface{} {
+// Map returns a map representation of the query, thus implementing the
+// Mappable interface.
+func (q *MatchAllQuery) Map() map[string]interface{} {
 	var mType string
-	switch a.all {
+	switch q.all {
 	case true:
 		mType = "match_all"
 	default:
@@ -26,14 +26,16 @@ func (a *MatchAllQuery) Map() map[string]interface{} {
 	}
 
 	return map[string]interface{}{
-		mType: structs.Map(a.params),
+		mType: structs.Map(q.params),
 	}
 }
 
+// MatchAll creates a new query of type "match_all".
 func MatchAll() *MatchAllQuery {
 	return &MatchAllQuery{all: true}
 }
 
+// Boost assigns a score boost for documents matching the query.
 func (q *MatchAllQuery) Boost(b float32) *MatchAllQuery {
 	if q.all {
 		q.params.Boost = b
@@ -41,6 +43,7 @@ func (q *MatchAllQuery) Boost(b float32) *MatchAllQuery {
 	return q
 }
 
+// MatchNone creates a new query of type "match_none".
 func MatchNone() *MatchAllQuery {
 	return &MatchAllQuery{all: false}
 }
