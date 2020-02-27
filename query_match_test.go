@@ -19,14 +19,14 @@ func TestMatch(t *testing.T) {
 		},
 		{
 			"match with more params",
-			Match("issue_number").Query(16).Transpositions(false).MaxExpansions(32).Operator(AND),
+			Match("issue_number").Query(16).Transpositions(false).MaxExpansions(32).Operator(OperatorAnd),
 			map[string]interface{}{
 				"match": map[string]interface{}{
 					"issue_number": map[string]interface{}{
 						"query":          16,
 						"max_expansions": 32,
 						"transpositions": false,
-						"operator":       "and",
+						"operator":       "AND",
 					},
 				},
 			},

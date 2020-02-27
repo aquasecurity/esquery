@@ -62,13 +62,13 @@ func TestTermLevel(t *testing.T) {
 		},
 		{
 			"string range",
-			Range("timestamp").Gte("now-1d/d").Lt("now/d").Relation(CONTAINS),
+			Range("timestamp").Gte("now-1d/d").Lt("now/d").Relation(RangeIntersects),
 			map[string]interface{}{
 				"range": map[string]interface{}{
 					"timestamp": map[string]interface{}{
 						"gte":      "now-1d/d",
 						"lt":       "now/d",
-						"relation": "CONTAINS",
+						"relation": "INTERSECTS",
 					},
 				},
 			},

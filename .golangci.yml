@@ -27,3 +27,5 @@ linters:
         - prealloc
         - unconvert
         - unparam
+        - golint
+        - godox

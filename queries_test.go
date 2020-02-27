@@ -23,7 +23,7 @@ func TestQueryMaps(t *testing.T) {
 						Range("date").
 							Gt("some time in the past").
 							Lte("now").
-							Relation(CONTAINS).
+							Relation(RangeContains).
 							TimeZone("Asia/Jerusalem").
 							Boost(2.3),
 
