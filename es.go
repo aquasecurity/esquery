@@ -105,3 +105,11 @@ package esquery
 type Mappable interface {
 	Map() map[string]interface{}
 }
+
+// Aggregation is an interface that each aggregation type must implement. It
+// is simply an extension of the Mappable interface to include a Named function,
+// which returns the name of the aggregation.
+type Aggregation interface {
+	Mappable
+	Name() string
+}

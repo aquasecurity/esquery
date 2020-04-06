@@ -57,42 +57,34 @@ import (
 
 func main() {
     // connect to an ElasticSearch instance
-	es, err := elasticsearch.NewDefaultClient()
-	if err != nil {
-		log.Fatalf("Failed creating client: %s", err)
-	}
+    es, err := elasticsearch.NewDefaultClient()
+    if err != nil {
+        log.Fatalf("Failed creating client: %s", err)
+    }
 
     // run a boolean search query
-	qRes, err := esquery.Query(
-		esquery.
-			Bool().
-			Must(esquery.Term("title", "Go and Stuff")).
-			Filter(esquery.Term("tag", "tech")),
-    ).Run(
-        es, 
-		es.Search.WithContext(context.TODO()),
-		es.Search.WithIndex("test"),
-	)
-	if err != nil {
-		log.Fatalf("Failed searching for stuff: %s", err)
-	}
+    res, err := esquery.Search().
+        Query(
+            esquery.
+                Bool().
+                Must(esquery.Term("title", "Go and Stuff")).
+                Filter(esquery.Term("tag", "tech")),
+        ).
+        Aggs(
+            esquery.Avg("average_score", "score"),
+            esquery.Max("max_score", "score"),
+        ).
+        Size(20).
+        Run(
+            es, 
+            es.Search.WithContext(context.TODO()),
+            es.Search.WithIndex("test"),
+        )
+        if err != nil {
+            log.Fatalf("Failed searching for stuff: %s", err)
+        }
 
-	defer qRes.Body.Close()
-
-	// run an aggregation
-	aRes, err := esquery.Aggregate(
-		esquery.Avg("average_score", "score"),
-		esquery.Max("max_score", "score"),
-	).Run(
-		es,
-		es.Search.WithContext(context.TODO()),
-		es.Search.WithIndex("test"),
-	)
-	if err != nil {
-		log.Fatalf("Failed searching for stuff: %s", err)
-	}
-
-	defer aRes.Body.Close()
+    defer res.Body.Close()
 
     // ...
 }
@@ -163,6 +155,8 @@ The following aggregations are currently supported:
 | `"percentiles"`         | `Percentiles()`       |
 | `"stats"`               | `Stats()`             |
 | `"string_stats"`        | `StringStats()`       |
+| `"top_hits"`            | `TopHits()`           |
+| `"terms"`               | `TermsAgg()`          |
 
 #### Custom Queries and Aggregations
 
