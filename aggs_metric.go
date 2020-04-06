@@ -395,3 +395,82 @@ func (agg *StringStatsAgg) Map() map[string]interface{} {
 		agg.apiName: structs.Map(agg),
 	}
 }
+
+// ---------------------------------------------------------------------------//
+
+// TopHitsAgg represents an aggregation of type "top_hits", as described
+// in https://www.elastic.co/guide/en/elasticsearch/reference/
+//     current/search-aggregations-metrics-top-hits-aggregation.html
+type TopHitsAgg struct {
+	name   string
+	from   uint64
+	size   uint64
+	sort   []map[string]interface{}
+	source Source
+}
+
+// TopHits creates an aggregation of type "top_hits".
+func TopHits(name string) *TopHitsAgg {
+	return &TopHitsAgg{
+		name: name,
+	}
+}
+
+// Name returns the name of the aggregation.
+func (agg *TopHitsAgg) Name() string {
+	return agg.name
+}
+
+// From sets an offset from the first result to return.
+func (agg *TopHitsAgg) From(offset uint64) *TopHitsAgg {
+	agg.from = offset
+	return agg
+}
+
+// Size sets the maximum number of top matching hits to return per bucket (the
+// default is 3).
+func (agg *TopHitsAgg) Size(size uint64) *TopHitsAgg {
+	agg.size = size
+	return agg
+}
+
+// Sort sets how the top matching hits should be sorted. By default the hits are
+// sorted by the score of the main query.
+func (agg *TopHitsAgg) Sort(name string, order Order) *TopHitsAgg {
+	agg.sort = append(agg.sort, map[string]interface{}{
+		name: map[string]interface{}{
+			"order": order,
+		},
+	})
+
+	return agg
+}
+
+// SourceIncludes sets the keys to return from the top matching documents.
+func (agg *TopHitsAgg) SourceIncludes(keys ...string) *TopHitsAgg {
+	agg.source.includes = keys
+	return agg
+}
+
+// Map returns a map representation of the aggregation, thus implementing the
+// Mappable interface.
+func (agg *TopHitsAgg) Map() map[string]interface{} {
+	innerMap := make(map[string]interface{})
+
+	if agg.from > 0 {
+		innerMap["from"] = agg.from
+	}
+	if agg.size > 0 {
+		innerMap["size"] = agg.size
+	}
+	if len(agg.sort) > 0 {
+		innerMap["sort"] = agg.sort
+	}
+	if len(agg.source.includes) > 0 {
+		innerMap["_source"] = agg.source.Map()
+	}
+
+	return map[string]interface{}{
+		"top_hits": innerMap,
+	}
+}

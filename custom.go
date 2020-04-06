@@ -31,7 +31,7 @@ func (m *CustomQueryMap) Run(
 	api *elasticsearch.Client,
 	o ...func(*esapi.SearchRequest),
 ) (res *esapi.Response, err error) {
-	return Query(m).Run(api, o...)
+	return Search().Query(m).Run(api, o...)
 }
 
 //----------------------------------------------------------------------------//
