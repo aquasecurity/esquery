@@ -15,12 +15,13 @@ import (
 // Not all features of the search API are currently supported, but a request can
 // currently include a query, aggregations, and more.
 type SearchRequest struct {
-	query   Mappable
-	aggs    []Aggregation
-	from    *uint64
-	size    *uint64
-	explain *bool
-	timeout *time.Duration
+	query      Mappable
+	aggs       []Aggregation
+	postFilter Mappable
+	from       *uint64
+	size       *uint64
+	explain    *bool
+	timeout    *time.Duration
 }
 
 // Search creates a new SearchRequest object, to be filled via method chaining.
@@ -37,6 +38,12 @@ func (req *SearchRequest) Query(q Mappable) *SearchRequest {
 // Aggs sets one or more aggregations for the request.
 func (req *SearchRequest) Aggs(aggs ...Aggregation) *SearchRequest {
 	req.aggs = aggs
+	return req
+}
+
+// PostFilter sets a post_filter for the request.
+func (req *SearchRequest) PostFilter(filter Mappable) *SearchRequest {
+	req.postFilter = filter
 	return req
 }
 
@@ -80,6 +87,9 @@ func (req *SearchRequest) Map() map[string]interface{} {
 		}
 
 		m["aggs"] = aggs
+	}
+	if req.postFilter != nil {
+		m["post_filter"] = req.postFilter.Map()
 	}
 	if req.size != nil {
 		m["size"] = *req.size

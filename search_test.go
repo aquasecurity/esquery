@@ -42,6 +42,7 @@ func TestSearchMaps(t *testing.T) {
 					StringStats("tag_stats", "tags").
 						ShowDistribution(true),
 				).
+				PostFilter(Range("score").Gt(0)).
 				Size(30).
 				From(5).
 				Explain(true).
@@ -84,6 +85,13 @@ func TestSearchMaps(t *testing.T) {
 						"string_stats": map[string]interface{}{
 							"field":             "tags",
 							"show_distribution": true,
+						},
+					},
+				},
+				"post_filter": map[string]interface{}{
+					"range": map[string]interface{}{
+						"score": map[string]interface{}{
+							"gt": 0,
 						},
 					},
 				},
