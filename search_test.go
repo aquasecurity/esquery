@@ -46,6 +46,10 @@ func TestSearchMaps(t *testing.T) {
 				Size(30).
 				From(5).
 				Explain(true).
+				Sort("field_1", OrderDesc).
+				Sort("field_2", OrderAsc).
+				SourceIncludes("field_1", "field_2").
+				SourceExcludes("field_3").
 				Timeout(time.Duration(20000000000)),
 			map[string]interface{}{
 				"query": map[string]interface{}{
@@ -99,6 +103,14 @@ func TestSearchMaps(t *testing.T) {
 				"from":    5,
 				"explain": true,
 				"timeout": "20s",
+				"sort": []map[string]interface{}{
+					{"field_1": map[string]interface{}{"order": "desc"}},
+					{"field_2": map[string]interface{}{"order": "asc"}},
+				},
+				"_source": map[string]interface{}{
+					"includes": []string{"field_1", "field_2"},
+					"excludes": []string{"field_3"},
+				},
 			},
 		},
 	})

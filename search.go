@@ -22,6 +22,8 @@ type SearchRequest struct {
 	size       *uint64
 	explain    *bool
 	timeout    *time.Duration
+	source     Source
+	sort       Sort
 }
 
 // Search creates a new SearchRequest object, to be filled via method chaining.
@@ -37,7 +39,7 @@ func (req *SearchRequest) Query(q Mappable) *SearchRequest {
 
 // Aggs sets one or more aggregations for the request.
 func (req *SearchRequest) Aggs(aggs ...Aggregation) *SearchRequest {
-	req.aggs = aggs
+	req.aggs = append(req.aggs, aggs...)
 	return req
 }
 
@@ -60,6 +62,17 @@ func (req *SearchRequest) Size(size uint64) *SearchRequest {
 	return req
 }
 
+// Sort sets how the results should be sorted.
+func (req *SearchRequest) Sort(name string, order Order) *SearchRequest {
+	req.sort = append(req.sort, map[string]interface{}{
+		name: map[string]interface{}{
+			"order": order,
+		},
+	})
+
+	return req
+}
+
 // Explain sets whether the ElasticSearch API should return an explanation for
 // how each hit's score was calculated.
 func (req *SearchRequest) Explain(b bool) *SearchRequest {
@@ -70,6 +83,18 @@ func (req *SearchRequest) Explain(b bool) *SearchRequest {
 // Timeout sets a timeout for the request.
 func (req *SearchRequest) Timeout(dur time.Duration) *SearchRequest {
 	req.timeout = &dur
+	return req
+}
+
+// SourceIncludes sets the keys to return from the matching documents.
+func (req *SearchRequest) SourceIncludes(keys ...string) *SearchRequest {
+	req.source.includes = keys
+	return req
+}
+
+// SourceExcludes sets the keys to not return from the matching documents.
+func (req *SearchRequest) SourceExcludes(keys ...string) *SearchRequest {
+	req.source.excludes = keys
 	return req
 }
 
@@ -94,6 +119,9 @@ func (req *SearchRequest) Map() map[string]interface{} {
 	if req.size != nil {
 		m["size"] = *req.size
 	}
+	if len(req.sort) > 0 {
+		m["sort"] = req.sort
+	}
 	if req.from != nil {
 		m["from"] = *req.from
 	}
@@ -102,6 +130,11 @@ func (req *SearchRequest) Map() map[string]interface{} {
 	}
 	if req.timeout != nil {
 		m["timeout"] = fmt.Sprintf("%.0fs", req.timeout.Seconds())
+	}
+
+	source := req.source.Map()
+	if len(source) > 0 {
+		m["_source"] = source
 	}
 
 	return m

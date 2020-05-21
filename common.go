@@ -4,13 +4,19 @@ package esquery
 // queries. Currently, only the "includes" option is supported.
 type Source struct {
 	includes []string
+	excludes []string
 }
 
 // Map returns a map representation of the Source object.
 func (source Source) Map() map[string]interface{} {
-	return map[string]interface{}{
-		"includes": source.includes,
+	m := make(map[string]interface{})
+	if len(source.includes) > 0 {
+		m["includes"] = source.includes
 	}
+	if len(source.excludes) > 0 {
+		m["excludes"] = source.excludes
+	}
+	return m
 }
 
 // Sort represents a list of keys to sort by.
