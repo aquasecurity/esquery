@@ -76,7 +76,7 @@ func main() {
         ).
         Size(20).
         Run(
-            es, 
+            es,
             es.Search.WithContext(context.TODO()),
             es.Search.WithIndex("test"),
         )
@@ -124,6 +124,7 @@ The following queries are currently supported:
 | `"match_phrase_prefix"` | `MatchPhrasePrefix()` |
 | `"match_all"`           | `MatchAll()`          |
 | `"match_none"`          | `MatchNone()`         |
+| `"multi_match"`         | `MultiMatch()`        |
 | `"exists"`              | `Exists()`            |
 | `"fuzzy"`               | `Fuzzy()`             |
 | `"ids"`                 | `IDs()`               |
@@ -157,6 +158,23 @@ The following aggregations are currently supported:
 | `"string_stats"`        | `StringStats()`       |
 | `"top_hits"`            | `TopHits()`           |
 | `"terms"`               | `TermsAgg()`          |
+
+### Supported Top Level Options
+
+The following top level options are currently supported:
+
+| ElasticSearch DSL       | `esquery.Search` Function              |
+| ------------------------|--------------------------------------- |
+| `"highlight"`           | `Highlight()`                          |
+| `"explain"`             | `Explain()`                            |
+| `"from"`                | `From()`                               |
+| `"postFilter"`          | `PostFilter()`                         |
+| `"query"`               | `Query()`                              |
+| `"aggs"`                | `Aggs()`                               |
+| `"size"`                | `Size()`                               |
+| `"sort"`                | `Sort()`                               |
+| `"source"`              | `SourceIncludes(), SourceExcludes()`   |
+| `"timeout"`             | `Timeout()`                            |
 
 #### Custom Queries and Aggregations
 
