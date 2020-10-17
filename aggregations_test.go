@@ -58,5 +58,39 @@ func TestAggregations(t *testing.T) {
 				},
 			},
 		},
+		{
+			"a complex, multi-aggregation, nested",
+			Aggregate(
+				NestedAgg("categories","categories").
+				Aggs(TermsAgg("type","outdoors")),
+				FilterAgg("filtered",
+					Term("type", "t-shirt")),
+			),
+			map[string]interface{}{
+				"aggs": map[string]interface{}{
+					"categories": map[string]interface{}{
+						"nested": map[string]interface{}{
+							"path": "categories",
+						},
+						"aggs": map[string]interface{} {
+							"type": map[string]interface{} {
+								"terms": map[string]interface{} {
+									"field": "outdoors",
+								},
+							},
+						},
+					},
+					"filtered": map[string]interface{}{
+						"filter": map[string]interface{}{
+							"term": map[string]interface{}{
+								"type":   map[string]interface{} {
+									"value": "t-shirt",
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 	})
 }
