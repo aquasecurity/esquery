@@ -1,16 +1,16 @@
 package esquery
 
 type NestedAggregation struct {
-	name        string
-	path        string
-	aggs        []Aggregation
+	name string
+	path string
+	aggs []Aggregation
 }
 
 // NestedAgg creates a new aggregation of type "nested". The method name includes
 // the "Agg" suffix to prevent conflict with the "nested" query.
 func NestedAgg(name string, path string) *NestedAggregation {
 	return &NestedAggregation{
-		name:  name,
+		name: name,
 		path: path,
 	}
 }

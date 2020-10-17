@@ -1,16 +1,16 @@
 package esquery
 
 type FilterAggregation struct {
-	name        string
-	filter      Mappable
-	aggs        []Aggregation
+	name   string
+	filter Mappable
+	aggs   []Aggregation
 }
 
 // Filter creates a new aggregation of type "filter". The method name includes
 // the "Agg" suffix to prevent conflict with the "filter" query.
 func FilterAgg(name string, filter Mappable) *FilterAggregation {
 	return &FilterAggregation{
-		name:  name,
+		name:   name,
 		filter: filter,
 	}
 }

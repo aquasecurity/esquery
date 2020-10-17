@@ -22,7 +22,7 @@ func (q *QueryHighlight) Map() map[string]interface{} {
 }
 
 type QueryHighlight struct {
-	highlightQuery Mappable      `structs:"highlight_query,omitempty"`
+	highlightQuery Mappable                   `structs:"highlight_query,omitempty"`
 	fields         map[string]*QueryHighlight `structs:"fields"`
 	params         highlighParams
 }
@@ -64,13 +64,13 @@ func newHighlight() *QueryHighlight {
 
 // PreTags sets the highlight query's pre_tags ignore unmapped field
 func (q *QueryHighlight) PreTags(s ...string) *QueryHighlight {
-	q.params.PreTags = append(q.params.PreTags,s...)
+	q.params.PreTags = append(q.params.PreTags, s...)
 	return q
 }
 
 // PostTags sets the highlight query's post_tags ignore unmapped field
 func (q *QueryHighlight) PostTags(s ...string) *QueryHighlight {
-	q.params.PostTags = append(q.params.PostTags,s...)
+	q.params.PostTags = append(q.params.PostTags, s...)
 	return q
 }
 
@@ -166,7 +166,7 @@ func (q *QueryHighlight) HighlightQuery(b Mappable) *QueryHighlight {
 
 // MatchedFields sets the highlight query's matched_fields ignore unmapped field
 func (q *QueryHighlight) MatchedFields(s ...string) *QueryHighlight {
-	q.params.MatchedFields = append(q.params.MatchedFields,s...)
+	q.params.MatchedFields = append(q.params.MatchedFields, s...)
 	return q
 }
 

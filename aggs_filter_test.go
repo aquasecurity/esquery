@@ -6,11 +6,11 @@ func TestFilterAggs(t *testing.T) {
 	runMapTests(t, []mapTest{
 		{
 			"filter agg: simple",
-			FilterAgg("filtered", Term("type","t-shirt")),
+			FilterAgg("filtered", Term("type", "t-shirt")),
 			map[string]interface{}{
 				"filter": map[string]interface{}{
-					"term": map[string]interface{} {
-						"type": map[string]interface{} {
+					"term": map[string]interface{}{
+						"type": map[string]interface{}{
 							"value": "t-shirt",
 						},
 					},
@@ -19,18 +19,18 @@ func TestFilterAggs(t *testing.T) {
 		},
 		{
 			"filter agg: with aggs",
-			FilterAgg("filtered", Term("type","t-shirt")).
-			Aggs(Avg("avg_price","price")),
+			FilterAgg("filtered", Term("type", "t-shirt")).
+				Aggs(Avg("avg_price", "price")),
 			map[string]interface{}{
 				"filter": map[string]interface{}{
-					"term": map[string]interface{} {
-						"type": map[string]interface{} {
+					"term": map[string]interface{}{
+						"type": map[string]interface{}{
 							"value": "t-shirt",
 						},
 					},
 				},
-				"aggs": map[string]interface{} {
-					"avg_price": map[string]interface{} {
+				"aggs": map[string]interface{}{
+					"avg_price": map[string]interface{}{
 						"avg": map[string]interface{}{
 							"field": "price",
 						},

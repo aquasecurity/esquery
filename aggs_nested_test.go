@@ -16,14 +16,14 @@ func TestNestedAggs(t *testing.T) {
 		{
 			"nested agg: with aggs",
 			NestedAgg("more_nested", "authors").
-			Aggs(TermsAgg("authors","name")),
+				Aggs(TermsAgg("authors", "name")),
 			map[string]interface{}{
 				"nested": map[string]interface{}{
 					"path": "authors",
 				},
-				"aggs": map[string]interface{} {
-					"authors": map[string]interface{} {
-						"terms": map[string]interface{} {
+				"aggs": map[string]interface{}{
+					"authors": map[string]interface{}{
+						"terms": map[string]interface{}{
 							"field": "name",
 						},
 					},
