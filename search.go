@@ -15,15 +15,16 @@ import (
 // Not all features of the search API are currently supported, but a request can
 // currently include a query, aggregations, and more.
 type SearchRequest struct {
-	query      Mappable
 	aggs       []Aggregation
-	postFilter Mappable
-	from       *uint64
-	size       *uint64
 	explain    *bool
-	timeout    *time.Duration
-	source     Source
+	from       *uint64
+	highlight  Mappable
+	postFilter Mappable
+	query      Mappable
+	size       *uint64
 	sort       Sort
+	source     Source
+	timeout    *time.Duration
 }
 
 // Search creates a new SearchRequest object, to be filled via method chaining.
@@ -98,6 +99,13 @@ func (req *SearchRequest) SourceExcludes(keys ...string) *SearchRequest {
 	return req
 }
 
+// Highlight sets a highlight for the request.
+func (req *SearchRequest) Highlight(highlight Mappable) *SearchRequest {
+	req.highlight = highlight
+	return req
+}
+
+
 // Map implements the Mappable interface. It converts the request to into a
 // nested map[string]interface{}, as expected by the go-elasticsearch library.
 func (req *SearchRequest) Map() map[string]interface{} {
@@ -130,6 +138,9 @@ func (req *SearchRequest) Map() map[string]interface{} {
 	}
 	if req.timeout != nil {
 		m["timeout"] = fmt.Sprintf("%.0fs", req.timeout.Seconds())
+	}
+	if req.highlight != nil {
+		m["highlight"] = req.highlight.Map()
 	}
 
 	source := req.source.Map()
