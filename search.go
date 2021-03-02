@@ -19,7 +19,7 @@ type SearchRequest struct {
 	explain     *bool
 	from        *uint64
 	highlight   Mappable
-	searchAfter []string
+	searchAfter []interface{}
 	postFilter  Mappable
 	query       Mappable
 	size        *uint64
@@ -76,7 +76,7 @@ func (req *SearchRequest) Sort(name string, order Order) *SearchRequest {
 }
 
 // SearchAfter retrieve the sorted result
-func (req *SearchRequest) SearchAfter(s ...string) *SearchRequest {
+func (req *SearchRequest) SearchAfter(s ...interface{}) *SearchRequest {
 	req.searchAfter = append(req.searchAfter, s...)
 	return req
 }
