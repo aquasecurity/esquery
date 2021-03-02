@@ -8,6 +8,13 @@ import (
 func TestSearchMaps(t *testing.T) {
 	runMapTests(t, []mapTest{
 		{
+			"a simple query with search after",
+			Search().SearchAfter("_id", "name"),
+			map[string]interface{}{
+				"search_after": []string{"_id", "name"},
+			},
+		},
+		{
 			"a simple match_all query with a size and no aggs",
 			Search().Query(MatchAll()).Size(20),
 			map[string]interface{}{
