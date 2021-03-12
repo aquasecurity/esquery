@@ -13,6 +13,7 @@ type TermsAggregation struct {
 	showTermDoc *bool
 	aggs        []Aggregation
 	order       map[string]string
+	include     []string
 }
 
 // TermsAgg creates a new aggregation of type "terms". The method name includes
@@ -61,6 +62,12 @@ func (agg *TermsAggregation) Order(order map[string]string) *TermsAggregation {
 	return agg
 }
 
+// Include filter the values for  buckets
+func (agg *TermsAggregation) Include(include ...string) *TermsAggregation {
+	agg.include = include
+	return agg
+}
+
 // Map returns a map representation of the aggregation, thus implementing the
 // Mappable interface.
 func (agg *TermsAggregation) Map() map[string]interface{} {
@@ -79,6 +86,15 @@ func (agg *TermsAggregation) Map() map[string]interface{} {
 	}
 	if agg.order != nil {
 		innerMap["order"] = agg.order
+	}
+
+	if agg.include != nil {
+		if len(agg.include) <= 1 {
+			innerMap["include"] = agg.include[0]
+		} else {
+			innerMap["include"] = agg.include
+		}
+
 	}
 
 	outerMap := map[string]interface{}{

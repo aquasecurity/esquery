@@ -120,5 +120,41 @@ func TestAggregations(t *testing.T) {
 				},
 			},
 		},
+		{
+			"Single include for termsAggs",
+			//eq.Aggregate(eq.TermsAgg("a1", "FIELD1").Size(0).Aggs(eq.Sum("a2", "FIELD2.SUBFIELD")))
+			Aggregate(
+				TermsAgg("categories", "categories").
+					Include("red.*|blue.*"),
+			),
+			map[string]interface{}{
+				"aggs": map[string]interface{}{
+					"categories": map[string]interface{}{
+						"terms": map[string]interface{}{
+							"field":   "categories",
+							"include": "red.*|blue.*",
+						},
+					},
+				},
+			},
+		},
+		{
+			"Multi include for termsAggs",
+			//eq.Aggregate(eq.TermsAgg("a1", "FIELD1").Size(0).Aggs(eq.Sum("a2", "FIELD2.SUBFIELD")))
+			Aggregate(
+				TermsAgg("categories", "categories").
+					Include("red", "blue"),
+			),
+			map[string]interface{}{
+				"aggs": map[string]interface{}{
+					"categories": map[string]interface{}{
+						"terms": map[string]interface{}{
+							"field":   "categories",
+							"include": []string{"red", "blue"},
+						},
+					},
+				},
+			},
+		},
 	})
 }
