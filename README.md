@@ -1,7 +1,9 @@
 # esquery
 
 [![](https://img.shields.io/static/v1?label=godoc&message=reference&color=blue&style=flat-square)](https://godoc.org/github.com/aquasecurity/esquery) [![](https://img.shields.io/github/license/aquasecurity/esquery?style=flat-square)](LICENSE) [![Build Status](https://travis-ci.org/aquasecurity/esquery.svg?branch=master)](https://travis-ci.org/aquasecurity/esquery)
-
+[![GitHub release](https://img.shields.io/github/release/aquasecurity/esquery.svg)](https://github.com/aquasecurity/esquery/releases/latest)
+[![Go Report Card](https://goreportcard.com/badge/github.com/aquasecurity/esquery)](https://goreportcard.com/report/github.com/aquasecurity/esquery)
+[![codecov](https://codecov.io/gh/aquasecurity/esquery/branch/main/graph/badge.svg)](https://codecov.io/gh/aquasecurity/esquery)
 
 **A non-obtrusive, idiomatic and easy-to-use query and aggregation builder for the [official Go client](https://github.com/elastic/go-elasticsearch) for [ElasticSearch](https://www.elastic.co/products/elasticsearch).**
 
