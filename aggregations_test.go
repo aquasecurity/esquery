@@ -82,9 +82,8 @@ func TestAggregations(t *testing.T) {
 					},
 					"filtered": map[string]interface{}{
 						"filter": map[string]interface{}{
-							"term": map[string]interface{}
-								"type":   map[string]interface{} {
-
+							"term": map[string]interface{}{
+								"type": map[string]interface{}{
 									"value": "t-shirt",
 								},
 							},
@@ -93,7 +92,6 @@ func TestAggregations(t *testing.T) {
 				},
 			},
 		},
-
 		{
 			"order for termsAggs",
 			//eq.Aggregate(eq.TermsAgg("a1", "FIELD1").Size(0).Aggs(eq.Sum("a2", "FIELD2.SUBFIELD")))
