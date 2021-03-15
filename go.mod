@@ -1,4 +1,4 @@
-module github.com/hardy4yooz/esquery
+module github.com/aquasecurity/esquery
 
 go 1.13
 
